@@ -153,10 +153,10 @@ public class RouteHandler
     private static boolean getStats(OutputStreamWriter outWriter) throws IOException
     {
         String responseBody = String.format("{\n" +
-                                                    "\t\"sum\": %s\n" +
-                                                    "\t\"avg\": %s\n" +
-                                                    "\t\"max\": %s\n" +
-                                                    "\t\"min\": %s\n" +
+                                                    "\t\"sum\": %s,\n" +
+                                                    "\t\"avg\": %s,\n" +
+                                                    "\t\"max\": %s,\n" +
+                                                    "\t\"min\": %s,\n" +
                                                     "\t\"count\": %s\n" +
                                                     "}", sum, avg, max, min, count);
         // send response
