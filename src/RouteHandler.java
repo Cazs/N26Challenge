@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class RouteHandler
 {
     private static DoublyLinkedList transactions = new DoublyLinkedList();
+
     public static int time_limit = 60 * 1000; // time limit in milliseconds
     private static double sum = 0.0f; // sum of Transactions made in the last 60 seconds
     private static double avg = 0.0f; // average Transaction value of Transactions made in the last 60 seconds
@@ -35,7 +36,7 @@ public class RouteHandler
                 Server.errorAndCloseConnection(client_connection,
                                         HttpResponseCodes.HTTP_404,
                                         Server.DEFAULT_HTTP_VERSION,
-                                        "Error: Unknown HTTP method.");
+                                        "Error: Unknown HTTP method.\n");
                 return false;
         }
     }
@@ -44,19 +45,17 @@ public class RouteHandler
     {
         System.out.println("handling GET request." );
 
-        String responseBody = String.format("{\n" +
-                                                    "\t\"sum\": %s\n" +
-                                                    "\t\"avg\": %s\n" +
-                                                    "\t\"max\": %s\n" +
-                                                    "\t\"min\": %s\n" +
-                                                    "\t\"count\": %s\n" +
-                                            "}", sum, avg, max, min, count);
-        // send response
-
-        return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_201,
-                                  Server.DEFAULT_HTTP_VERSION,
-                                  responseBody);
+        switch (resourcePath.toLowerCase())
+        {
+            case "/statistics":
+                return getStats(outWriter);
+            default:
+                Server.errorAndCloseConnection(client_connection,
+                                               HttpResponseCodes.HTTP_404,
+                                               Server.DEFAULT_HTTP_VERSION,
+                                               "Error: Unknown endpoint ["+resourcePath+"].\n");
+                return false;
+        }
     }
 
     private static boolean put(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
@@ -70,8 +69,59 @@ public class RouteHandler
 
     private static boolean post(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
     {
-        System.out.println("handling POST request." );
+        System.out.println("handling POST ["+resourcePath+"] request." );
 
+        switch (resourcePath.toLowerCase())
+        {
+            case "/transactions":
+                return addTransaction(client_connection, streamReader, outWriter);
+            default:
+                System.err.println("Unknown endpoint ["+resourcePath+"].");
+                Server.errorAndCloseConnection(client_connection,
+                                               HttpResponseCodes.HTTP_404,
+                                               Server.DEFAULT_HTTP_VERSION,
+                                               "Error: Unknown endpoint ["+resourcePath+"].\n");
+                return false;
+        }
+    }
+
+    private static boolean patch(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
+    {
+        System.out.println("handling PATCH request." );
+        return Server.sendMessage(outWriter,
+                                  HttpResponseCodes.HTTP_200,
+                                  Server.DEFAULT_HTTP_VERSION,
+                                  "PATCH handler is not implemented");
+    }
+
+    private static boolean delete(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
+    {
+        System.out.println("handling DELETE request." );
+        return Server.sendMessage(outWriter,
+                                  HttpResponseCodes.HTTP_200,
+                                  Server.DEFAULT_HTTP_VERSION,
+                                  "DELETE handler is not implemented");
+    }
+
+    private static boolean getStats(OutputStreamWriter outWriter) throws IOException
+    {
+        String responseBody = String.format("{\n" +
+                                                    "\t\"sum\": %s\n" +
+                                                    "\t\"avg\": %s\n" +
+                                                    "\t\"max\": %s\n" +
+                                                    "\t\"min\": %s\n" +
+                                                    "\t\"count\": %s\n" +
+                                                    "}", sum, avg, max, min, count);
+        // send response
+
+        return Server.sendMessage(outWriter,
+                                  HttpResponseCodes.HTTP_201,
+                                  Server.DEFAULT_HTTP_VERSION,
+                                  responseBody);
+    }
+
+    private static boolean addTransaction(Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
+    {
         StringBuilder bodyBuilder = new StringBuilder();
 
         char[] buffer = new char[512];
@@ -85,8 +135,11 @@ public class RouteHandler
 
         String transaction_str = body.substring(1,body.length()-1); // strip braces
         System.out.println("processing Transaction:\n" + transaction_str);
-        double amount = 0.0d;
-        long timestamp = 0l;
+
+        double amount = 0.0d; // amount of new Transaction
+        long timestamp = 0l; // timestamp of new Transaction
+
+        // iterate over Transaction's JSON properties.
         for(String property: transaction_str.split(","))
         {
             System.out.println("processing Transaction property: " + property);
@@ -105,22 +158,25 @@ public class RouteHandler
                     case "timestamp":
                         timestamp = Long.parseLong(matcher.group(2));
                         break;
-                        default:
-                            System.err.println("Unknown Transaction property: " + matcher.group(1));
+                    default:
+                        System.err.println("Unknown Transaction property: " + matcher.group(1));
                 }
             }
         }
         Transaction newTransaction = new Transaction(amount, timestamp);
 
-         // dummy Transaction
-         // long transaction_time = System.currentTimeMillis(); // time the transaction was logged
-         // Transaction newTransaction = new Transaction(new Random().nextDouble() * 1000, transaction_time);
+        // dummy Transaction
+        // long transaction_time = System.currentTimeMillis(); // time the transaction was logged
+        // Transaction newTransaction = new Transaction(new Random().nextDouble() * 1000, transaction_time);
 
         if(newTransaction == null)
-            return Server.errorAndCloseConnection(client_connection,
-                                                  HttpResponseCodes.HTTP_409,
-                                                  Server.DEFAULT_HTTP_VERSION,
-                                                  "Error: Invalid Transaction.");
+        {
+            Server.errorAndCloseConnection(client_connection,
+                                           HttpResponseCodes.HTTP_409,
+                                           Server.DEFAULT_HTTP_VERSION,
+                                           "Error: Invalid Transaction.\n");
+            return false;
+        }
 
         transactions.insertBefore(transactions.getLastNode(), newTransaction);
 
@@ -129,8 +185,8 @@ public class RouteHandler
 
 
         System.out.println(String.format("Currently storing ["
-                                             +transactions.size()
-                                             +"] Transactions in memory.\n"));
+                                                 +transactions.size()
+                                                 +"] Transactions in memory.\n"));
 
         // compute stats
         min = newTransaction.getAmount();
@@ -142,21 +198,21 @@ public class RouteHandler
         System.out.println("\nList of Transactions made within the last "+(time_limit/1000)+" seconds.\n" +
                                    "-----------------------------------------------------");
         transactions.filter((Object object) ->
-        {
-            Transaction transaction = (Transaction) object;
-            System.out.println(transaction);
+                            {
+                                Transaction transaction = (Transaction) object;
+                                System.out.println(transaction);
 
-            count++;
-            sum += transaction.getAmount();
+                                count++;
+                                sum += transaction.getAmount();
 
-            if(transaction.getAmount() > max)
-                max = transaction.getAmount();
-            if(transaction.getAmount() < min)
-                min = transaction.getAmount();
+                                if(transaction.getAmount() > max)
+                                    max = transaction.getAmount();
+                                if(transaction.getAmount() < min)
+                                    min = transaction.getAmount();
 
-            avg = sum/count;
-            return transaction; // not really used anywhere right now
-        }, System.currentTimeMillis() - time_limit);
+                                avg = sum/count;
+                                return transaction; // not really used anywhere right now
+                            }, System.currentTimeMillis() - time_limit);
 
         System.out.println(String.format("\n-----\nSTATS\n-----\nsum:%s\navg:%s\nmax:%s\nmin:%s\ncount:%s", sum, avg, max, min, count));
 
@@ -165,32 +221,13 @@ public class RouteHandler
         // check if was done in the last 60 seconds
         if(newTransaction.getTimestamp() >= utcCalendar.getTimeInMillis() - time_limit)
             return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_201,
-                                  Server.DEFAULT_HTTP_VERSION,
-                                  "success");
+                                      HttpResponseCodes.HTTP_201,
+                                      Server.DEFAULT_HTTP_VERSION,
+                                      "success");
         else // new Transaction's timestamp is older than 60 seconds
             return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_204,
-                                  Server.DEFAULT_HTTP_VERSION,
-                                  "too old");
-    }
-
-
-    private static boolean patch(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
-    {
-        System.out.println("handling PATCH request." );
-        return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_200,
-                                  Server.DEFAULT_HTTP_VERSION,
-                                  "PATCH handler is not implemented");
-    }
-
-    private static boolean delete(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
-    {
-        System.out.println("handling DELETE request." );
-        return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_200,
-                                  Server.DEFAULT_HTTP_VERSION,
-                                  "DELETE handler is not implemented");
+                                      HttpResponseCodes.HTTP_204,
+                                      Server.DEFAULT_HTTP_VERSION,
+                                      "too old");
     }
 }
