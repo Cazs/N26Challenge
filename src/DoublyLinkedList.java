@@ -1,9 +1,7 @@
 import javafx.util.Callback;
 
-import java.util.Iterator;
-
-// Sort in descending order, from most recent Transaction, to oldest Transaction
-public class DoublyLinkedList implements Iterable<Transaction>
+// Sort in descending order, from oldest Transaction to most recent Transaction
+public class DoublyLinkedList
 {
     private Node lastNode;
     private int size;
@@ -51,6 +49,7 @@ public class DoublyLinkedList implements Iterable<Transaction>
         }
      */
 
+    
     public Node getLastNode()
     {
         return lastNode;
@@ -140,111 +139,5 @@ public class DoublyLinkedList implements Iterable<Transaction>
     public int size()
     {
         return size;
-    }
-
-    @Override
-    public Iterator<Transaction> iterator()
-    {
-        return new Iterator<Transaction>()
-        {
-            Node cursor = DoublyLinkedList.this.lastNode;
-
-            @Override
-            public boolean hasNext()
-            {
-                System.out.println("elem ("+cursor.getValue()+") has next? " + (cursor.getNext() != null && cursor.getNext().getValue() != null));
-                return cursor.getNext() != null && cursor.getNext().getValue() != null;
-            }
-
-            @Override
-            public Transaction next()
-            {
-                if(hasNext())
-                {
-                    Transaction current_value = cursor.getValue();
-                    cursor = cursor.getNext();
-                    return current_value;
-                } throw new IndexOutOfBoundsException("No next element.");
-            }
-        };
-    }
-}
-
-class Node implements Comparable<Transaction>
-{
-    private Node next;
-    private Node previous;
-    private long date_logged;
-    private Transaction value;
-
-    Node(Transaction transaction, long date_logged)
-    {
-        this.date_logged = date_logged;
-        this.setValue(transaction);
-    }
-
-    Node(Transaction value, Node next, Node previous, long date_logged)
-    {
-        this.value = value;
-        this.next = next;
-        this.previous = previous;
-        this.date_logged = date_logged;
-    }
-
-    public Node getNext()
-    {
-        return next;
-    }
-
-    public void setNext(Node next)
-    {
-        this.next = next;
-    }
-
-    public Node getPrevious()
-    {
-        return previous;
-    }
-
-    public void setPrevious(Node previous)
-    {
-        this.previous = previous;
-    }
-
-    public Transaction getValue()
-    {
-        return value;
-    }
-
-    public void setValue(Transaction value)
-    {
-        this.value = value;
-    }
-
-    @Override
-    public int compareTo(Transaction transaction)
-    {
-        if(transaction.getTimestamp() < getValue().getTimestamp())
-            return -1;
-        else if(transaction.getTimestamp() < getValue().getTimestamp())
-            return 1;
-        else
-            return 0;
-    }
-
-    public long getDate_logged()
-    {
-        return date_logged;
-    }
-
-    public void setDate_logged(long date_logged)
-    {
-        this.date_logged = date_logged;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "logged = " + getDate_logged() + ", value = " + getValue();
     }
 }

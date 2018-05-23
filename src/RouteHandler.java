@@ -50,6 +50,7 @@ public class RouteHandler
             case "/statistics":
                 return getStats(outWriter);
             default:
+                System.err.println("Unknown endpoint ["+resourcePath+"].");
                 Server.errorAndCloseConnection(client_connection,
                                                HttpResponseCodes.HTTP_404,
                                                Server.DEFAULT_HTTP_VERSION,
