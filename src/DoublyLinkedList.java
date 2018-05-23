@@ -55,6 +55,7 @@ public class DoublyLinkedList
      */
 
     /**
+     * Runs in O(1)
      * @return the tail/last Node in the List.
      */
     public Node getLastNode()
@@ -64,6 +65,7 @@ public class DoublyLinkedList
 
     /**
      * Method to filter List using an arbitrary comparator.
+     * Runs in O(n) at worst case
      * @param limit the limit applicable to comparator callback.
      */
     public void filter(Callback callback, long limit)
@@ -92,6 +94,7 @@ public class DoublyLinkedList
 
     /**
      * Method to insert a new Transaction before a specific Node in List.
+     * Runs in O(1) at worst case
      * @param target Target Node to insert before.
      * @param transaction Transaction to be appended to the list.
      */
@@ -127,6 +130,7 @@ public class DoublyLinkedList
 
     /**
      * Method to insert a new Transaction after a specific Node in List.
+     * Runs in O(1) at worst case.
      * @param target Target Node to insert after.
      * @param transaction Transaction to be appended to the list.
      */
@@ -159,6 +163,7 @@ public class DoublyLinkedList
     }
 
     /**
+     * Runs in O(1) at worst case
      * @return The size of the List.
      */
     public int size()

@@ -62,6 +62,15 @@ public class RouteHandler
         }
     }
 
+    /**
+     * Not implemented
+     * @param resourcePath request path.
+     * @param client_connection Connection to client's machine.
+     * @param streamReader BufferedReader for reading InputStream.
+     * @param outWriter OutputStreamWriter to send responses to client machine.
+     * @return whether the PUT was successful or not.
+     * @throws IOException
+     */
     private static boolean put(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
     {
         System.out.println("handling PUT request." );
@@ -71,6 +80,15 @@ public class RouteHandler
                                   "PUT handler is not implemented");
     }
 
+    /**
+     * Runs in O(n) at worst case due to stats computation.
+     * @param resourcePath request path.
+     * @param client_connection Connection to client's machine.
+     * @param streamReader BufferedReader for reading InputStream.
+     * @param outWriter OutputStreamWriter to send responses to client machine.
+     * @return whether the POST was successful or not.
+     * @throws IOException
+     */
     private static boolean post(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
     {
         System.out.println("handling POST ["+resourcePath+"] request." );
@@ -89,6 +107,15 @@ public class RouteHandler
         }
     }
 
+    /**
+     * Not Implemented
+     * @param resourcePath request path.
+     * @param client_connection Connection to client's machine.
+     * @param streamReader BufferedReader for reading InputStream.
+     * @param outWriter OutputStreamWriter to send responses to client machine.
+     * @return whether the PATCH was successful or not.
+     * @throws IOException
+     */
     private static boolean patch(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
     {
         System.out.println("handling PATCH request." );
@@ -98,6 +125,15 @@ public class RouteHandler
                                   "PATCH handler is not implemented");
     }
 
+    /**
+     * Not implemented
+     * @param resourcePath request path.
+     * @param client_connection Connection to client's machine.
+     * @param streamReader BufferedReader for reading InputStream.
+     * @param outWriter OutputStreamWriter to send responses to client machine.
+     * @return whether the DELETE was successful or not.
+     * @throws IOException
+     */
     private static boolean delete(String resourcePath, Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
     {
         System.out.println("handling DELETE request." );
@@ -107,6 +143,13 @@ public class RouteHandler
                                   "DELETE handler is not implemented");
     }
 
+    /**
+     * Method to get stats about Transactions made in the last 60 seconds
+     * Runs in O(1)
+     * @param outWriter OutputStreamWriter to send responses to client machine.
+     * @return whether the request was successful or not.
+     * @throws IOException
+     */
     private static boolean getStats(OutputStreamWriter outWriter) throws IOException
     {
         String responseBody = String.format("{\n" +
@@ -124,6 +167,13 @@ public class RouteHandler
                                   responseBody);
     }
 
+    /**
+     * Method to add a Transaction to Transactions DoublyLinkedList in memory
+     * Runs in O(n) at worst case due to stats computation.
+     * @param outWriter OutputStreamWriter to send responses to client machine.
+     * @return whether the request was successful or not.
+     * @throws IOException
+     */
     private static boolean addTransaction(Socket client_connection, BufferedReader streamReader, OutputStreamWriter outWriter) throws IOException
     {
         StringBuilder bodyBuilder = new StringBuilder();
