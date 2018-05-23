@@ -1,3 +1,8 @@
+/**
+ * @author ghost
+ * @date 2018/05/22
+ */
+
 public class Node
 {
     private Node next;

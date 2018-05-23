@@ -1,4 +1,9 @@
-public enum HttpResponseCodes
+/**
+ * @author ghost
+ * @date 2018/05/22
+ */
+
+public enum HttpResponseCode
 {
     HTTP_200(200, "OK"),
     HTTP_201(201, "SUCCESS"),
@@ -10,7 +15,7 @@ public enum HttpResponseCodes
     private int response_code;
     private String description;
 
-    HttpResponseCodes(int response_code, String description)
+    HttpResponseCode(int response_code, String description)
     {
         this.response_code = response_code;
         this.description = description;

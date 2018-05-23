@@ -1,5 +1,10 @@
 import javafx.util.Callback;
 
+/**
+ * @author ghost
+ * @date 2018/05/22
+ */
+
 // Sort in descending order, from oldest Transaction to most recent Transaction
 public class DoublyLinkedList
 {
@@ -49,12 +54,18 @@ public class DoublyLinkedList
         }
      */
 
-    
+    /**
+     * @return the tail/last Node in the List.
+     */
     public Node getLastNode()
     {
         return lastNode;
     }
 
+    /**
+     * Method to filter List using an arbitrary comparator.
+     * @param limit the limit applicable to comparator callback.
+     */
     public void filter(Callback callback, long limit)
     {
         Node current = lastNode.getPrevious();
@@ -79,6 +90,11 @@ public class DoublyLinkedList
         }
     }
 
+    /**
+     * Method to insert a new Transaction before a specific Node in List.
+     * @param target Target Node to insert before.
+     * @param transaction Transaction to be appended to the list.
+     */
     public Node insertBefore(Node target, Transaction transaction)
     {
         if(transaction == null)
@@ -108,6 +124,12 @@ public class DoublyLinkedList
         return newNode;
     }
 
+
+    /**
+     * Method to insert a new Transaction after a specific Node in List.
+     * @param target Target Node to insert after.
+     * @param transaction Transaction to be appended to the list.
+     */
     public Node insertAfter(Node target, Transaction transaction)
     {
         if(transaction == null)
@@ -136,6 +158,9 @@ public class DoublyLinkedList
         return newNode;
     }
 
+    /**
+     * @return The size of the List.
+     */
     public int size()
     {
         return size;

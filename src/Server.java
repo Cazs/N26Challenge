@@ -4,6 +4,11 @@ import java.net.Socket;
 import java.util.Date;
 
 // Mini HTTP server
+
+/**
+ * @author ghost
+ * @date 2018/05/22
+ */
 public class Server
 {
     private boolean run = true;
@@ -19,15 +24,7 @@ public class Server
         this.port = 8080;
         this.serverName = "dev";
         this.contentType = "application/json";
-        this.acceptRanges = "bytes"; //"*/*";
-    }
-
-    public Server(int port, String serverName, String contentType, String acceptRanges)
-    {
-        this.port = port;
-        this.serverName = serverName;
-        this.contentType = contentType;
-        this.acceptRanges = acceptRanges;
+        this.acceptRanges = "bytes";
     }
 
     public Server(int port, String serverName, String contentType)
@@ -36,6 +33,14 @@ public class Server
         this.serverName = serverName;
         this.contentType = contentType;
         this.acceptRanges = "bytes";
+    }
+
+    public Server(int port, String serverName, String contentType, String acceptRanges)
+    {
+        this.port = port;
+        this.serverName = serverName;
+        this.contentType = contentType;
+        this.acceptRanges = acceptRanges;
     }
 
     public void listen() throws IOException
@@ -73,9 +78,9 @@ public class Server
                                {
                                    System.err.println("Error: Invalid request.");
                                    errorAndCloseConnection(client_connection,
-                                                          HttpResponseCodes.HTTP_409,
-                                                          DEFAULT_HTTP_VERSION,
-                                                          "<h3>Error: Invalid request.</h3>");
+                                                           HttpResponseCode.HTTP_409,
+                                                           DEFAULT_HTTP_VERSION,
+                                                           "<h3>Error: Invalid request.</h3>");
                                    return;
                                }
 
@@ -111,7 +116,7 @@ public class Server
 
                            } else {
                                System.err.println("Error: Invalid stream.");
-                               errorAndCloseConnection(client_connection, HttpResponseCodes.HTTP_500,
+                               errorAndCloseConnection(client_connection, HttpResponseCode.HTTP_500,
                                                        DEFAULT_HTTP_VERSION,
                                                        "<h3>Error: Invalid connection.</h3>");
                            }
@@ -119,21 +124,21 @@ public class Server
                        {
                            System.err.println("Error: " + e.getMessage());
                            errorAndCloseConnection(client_connection,
-                                                   HttpResponseCodes.HTTP_500,
+                                                   HttpResponseCode.HTTP_500,
                                                    DEFAULT_HTTP_VERSION,
                                                    "<h3>Error: " + e.getMessage() + ".</h3>");
                        }
                    }).start();
         } else {
             System.err.println("Error: Invalid connection.");
-            errorAndCloseConnection(client_connection, HttpResponseCodes.HTTP_409,
+            errorAndCloseConnection(client_connection, HttpResponseCode.HTTP_409,
                                     DEFAULT_HTTP_VERSION,
                                     "<h3>Error: Invalid connection.</h3>");
         }
     }
 
     public static boolean errorAndCloseConnection(Socket client_connection,
-                                         HttpResponseCodes responseCode,
+                                         HttpResponseCode responseCode,
                                          String httpVersion,
                                          String responseBody)
     {
@@ -161,7 +166,7 @@ public class Server
     }
 
     public static boolean sendMessage(OutputStreamWriter outWriter,
-                             HttpResponseCodes responseCode,
+                             HttpResponseCode responseCode,
                              String httpVersion,
                              String responseBody) throws IOException
     {

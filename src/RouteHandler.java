@@ -7,6 +7,10 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author ghost
+ * @date 2018/05/22
+ */
 public class RouteHandler
 {
     private static DoublyLinkedList transactions = new DoublyLinkedList();
@@ -17,7 +21,6 @@ public class RouteHandler
     private static double max = 0.0f; // max Transaction value in the last 60 seconds
     private static double min = 0.0f; // lowest Transaction value in the last 60 seconds
     private static int count = 0; // number of Transactions made in the last 60 seconds
-
 
     public static boolean handle(Socket client_connection, BufferedReader streamReader, OutputStreamWriter streamWriter, String method, String resourcePath) throws IOException
     {
@@ -34,9 +37,9 @@ public class RouteHandler
             default:
                 System.err.println("Error: Unknown HTTP method.");
                 Server.errorAndCloseConnection(client_connection,
-                                        HttpResponseCodes.HTTP_404,
-                                        Server.DEFAULT_HTTP_VERSION,
-                                        "Error: Unknown HTTP method.\n");
+                                               HttpResponseCode.HTTP_404,
+                                               Server.DEFAULT_HTTP_VERSION,
+                                               "Error: Unknown HTTP method.\n");
                 return false;
         }
     }
@@ -52,7 +55,7 @@ public class RouteHandler
             default:
                 System.err.println("Unknown endpoint ["+resourcePath+"].");
                 Server.errorAndCloseConnection(client_connection,
-                                               HttpResponseCodes.HTTP_404,
+                                               HttpResponseCode.HTTP_404,
                                                Server.DEFAULT_HTTP_VERSION,
                                                "Error: Unknown endpoint ["+resourcePath+"].\n");
                 return false;
@@ -63,7 +66,7 @@ public class RouteHandler
     {
         System.out.println("handling PUT request." );
         return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_201,
+                                  HttpResponseCode.HTTP_201,
                                   Server.DEFAULT_HTTP_VERSION,
                                   "PUT handler is not implemented");
     }
@@ -79,7 +82,7 @@ public class RouteHandler
             default:
                 System.err.println("Unknown endpoint ["+resourcePath+"].");
                 Server.errorAndCloseConnection(client_connection,
-                                               HttpResponseCodes.HTTP_404,
+                                               HttpResponseCode.HTTP_404,
                                                Server.DEFAULT_HTTP_VERSION,
                                                "Error: Unknown endpoint ["+resourcePath+"].\n");
                 return false;
@@ -90,7 +93,7 @@ public class RouteHandler
     {
         System.out.println("handling PATCH request." );
         return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_200,
+                                  HttpResponseCode.HTTP_200,
                                   Server.DEFAULT_HTTP_VERSION,
                                   "PATCH handler is not implemented");
     }
@@ -99,7 +102,7 @@ public class RouteHandler
     {
         System.out.println("handling DELETE request." );
         return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_200,
+                                  HttpResponseCode.HTTP_200,
                                   Server.DEFAULT_HTTP_VERSION,
                                   "DELETE handler is not implemented");
     }
@@ -116,7 +119,7 @@ public class RouteHandler
         // send response
 
         return Server.sendMessage(outWriter,
-                                  HttpResponseCodes.HTTP_201,
+                                  HttpResponseCode.HTTP_201,
                                   Server.DEFAULT_HTTP_VERSION,
                                   responseBody);
     }
@@ -173,7 +176,7 @@ public class RouteHandler
         if(newTransaction == null)
         {
             Server.errorAndCloseConnection(client_connection,
-                                           HttpResponseCodes.HTTP_409,
+                                           HttpResponseCode.HTTP_409,
                                            Server.DEFAULT_HTTP_VERSION,
                                            "Error: Invalid Transaction.\n");
             return false;
@@ -222,12 +225,12 @@ public class RouteHandler
         // check if was done in the last 60 seconds
         if(newTransaction.getTimestamp() >= utcCalendar.getTimeInMillis() - time_limit)
             return Server.sendMessage(outWriter,
-                                      HttpResponseCodes.HTTP_201,
+                                      HttpResponseCode.HTTP_201,
                                       Server.DEFAULT_HTTP_VERSION,
                                       "success");
         else // new Transaction's timestamp is older than 60 seconds
             return Server.sendMessage(outWriter,
-                                      HttpResponseCodes.HTTP_204,
+                                      HttpResponseCode.HTTP_204,
                                       Server.DEFAULT_HTTP_VERSION,
                                       "too old");
     }
