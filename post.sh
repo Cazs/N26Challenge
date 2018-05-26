@@ -1,2 +1,4 @@
-curl -X POST http://localhost:8080/transactions -H "Content-Type: application/json" -H "Content-Length: 0" -d "{\"timestamp\":1527077181100, \"amount\":42.5}"
-curl -X POST http://localhost:8080/transactions -H "Content-Type: application/json" -H "Content-Length: 0" -d "{\"timestamp\":1527077184235, \"amount\":540.2}"
+curl -d '{"amount":2334, "timestamp": 0}' -H "Content-Type: application/json" -X POST http://localhost:8080/transactions
+curl -d '{"amount":42, "timestamp": 1}' -H "Content-Type: application/json" -X POST http://localhost:8080/transactions
+curl -d '{"amount":633, "timestamp": 2}' -H "Content-Type: application/json" -X POST http://localhost:8080/transactions
+curl -d '{"amount":1412, "timestamp": 3}' -H "Content-Type: application/json" -X POST http://localhost:8080/transactions
