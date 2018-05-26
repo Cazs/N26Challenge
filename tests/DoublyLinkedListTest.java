@@ -9,6 +9,10 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author ghost
+ * @date 2018/05/26
+ */
 public class DoublyLinkedListTest
 {
     private DoublyLinkedList dummyList;

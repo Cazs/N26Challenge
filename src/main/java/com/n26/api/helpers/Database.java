@@ -4,6 +4,11 @@ import com.n26.api.models.DoublyLinkedList;
 import com.n26.api.models.Node;
 import com.n26.api.models.Transaction;
 
+/**
+ * @author ghost
+ * @date 2018/05/26
+ */
+
 public class Database
 {
     private DoublyLinkedList transactions = new DoublyLinkedList();
@@ -31,8 +36,20 @@ public class Database
         return transactions;
     }
 
+    /**
+     * Method to add a Transaction to Transactions DoublyLinkedList in memory
+     * Runs in O(n) at worst case due to stats computation.
+     * @param newTransaction New Transaction instance to be added to Database collection.
+     * @return Node instance containing new Transaction instance.
+     */
     public Node addTransaction(Transaction newTransaction)
     {
+        if(newTransaction == null)
+        {
+            System.err.println("Error: Invalid Transaction.\n");
+            return null;
+        }
+
         Node transactionPosition = getTransactionsCollection().insertFirst(newTransaction);// sort newest to oldest
 
         System.out.println("added Transaction: " + newTransaction);
@@ -50,27 +67,47 @@ public class Database
         max = 0.0d;
         count = 0;
 
+        // compute stats in separate thread
         System.out.println("\nList of Transactions made within the last "+(time_limit/1000)+" seconds.\n" +
                                    "-----------------------------------------------------");
-        getTransactionsCollection().filter((Object object) ->
-                            {
-                                Transaction transaction = (Transaction) object;
-                                System.out.println(transaction);
+        new Thread(() ->
+                   {
+                       getTransactionsCollection().filter((Object object) ->
+                                                          {
+                                                              Transaction transaction = (Transaction) object;
+                                                              System.out.println(transaction);
 
-                                count++;
-                                sum += transaction.getAmount();
+                                                              count++;
+                                                              sum += transaction.getAmount();
 
-                                if(transaction.getAmount() > max)
-                                    max = transaction.getAmount();
-                                if(transaction.getAmount() < min)
-                                    min = transaction.getAmount();
+                                                              if(transaction.getAmount() > max)
+                                                                  max = transaction.getAmount();
+                                                              if(transaction.getAmount() < min)
+                                                                  min = transaction.getAmount();
 
-                                avg = sum/count;
-                                return transaction; // not really used anywhere right now
-                            }, System.currentTimeMillis() - time_limit);
+                                                              avg = sum/count;
+                                                              return transaction; // not really used anywhere right now
+                                                          }, System.currentTimeMillis() - time_limit);
 
-        System.out.println(String.format("\n-----\nSTATS\n-----\nsum:%s\navg:%s\nmax:%s\nmin:%s\ncount:%s", sum, avg, max, min, count));
+                       System.out.println(String.format("\n-----\nSTATS\n-----\nsum:%s\navg:%s\nmax:%s\nmin:%s\ncount:%s", sum, avg, max, min, count));
+                   }).start();
         return transactionPosition;
     }
 
+    /**
+     * Method to get stats about Transactions made in the last 60 seconds
+     * Runs in O(1)
+     * @return JSON object representing stats about Transactions made in the last 60 seconds
+     */
+    public String getStats()
+    {
+        return String.format(
+                    "{\n" +
+                        "\t\"sum\": %s,\n" +
+                        "\t\"avg\": %s,\n" +
+                        "\t\"max\": %s,\n" +
+                        "\t\"min\": %s,\n" +
+                        "\t\"count\": %s\n" +
+                    "}", sum, avg, max, min, count);
+    }
 }
