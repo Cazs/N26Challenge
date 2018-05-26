@@ -1,3 +1,6 @@
+package com.n26.api.models;
+
+import com.n26.api.exceptions.EmptyListException;
 import javafx.util.Callback;
 
 /**
@@ -21,7 +24,7 @@ public class DoublyLinkedList
 
     /**
      * Runs in O(1)
-     * @return the tail/last Node in the List.
+     * @return the tail/last com.n26.api.models.Node in the List.
      */
     public Node getLastNode() throws EmptyListException
     {
@@ -32,7 +35,7 @@ public class DoublyLinkedList
 
     /**
      * Runs in O(1)
-     * @return the head/first Node in the List.
+     * @return the head/first com.n26.api.models.Node in the List.
      */
     public Node getFirstNode() throws EmptyListException
     {
@@ -71,10 +74,10 @@ public class DoublyLinkedList
     }
 
     /**
-     * Inserts a new Transaction at the beginning of the List.
+     * Inserts a new com.n26.api.models.Transaction at the beginning of the List.
      * Runs in O(1)
-     * @param transaction Transaction to be inserted.
-     * @return newly created Node with Transaction inside.
+     * @param transaction com.n26.api.models.Transaction to be inserted.
+     * @return newly created com.n26.api.models.Node with com.n26.api.models.Transaction inside.
      */
     public Node insertFirst(Transaction transaction)
     {
@@ -82,10 +85,10 @@ public class DoublyLinkedList
     }
 
     /**
-     * Inserts a new Transaction at the end of the List.
+     * Inserts a new com.n26.api.models.Transaction at the end of the List.
      * Runs in O(1)
-     * @param transaction Transaction to be inserted.
-     * @return newly created Node with Transaction inside.
+     * @param transaction com.n26.api.models.Transaction to be inserted.
+     * @return newly created com.n26.api.models.Node with com.n26.api.models.Transaction inside.
      */
     public Node insertLast(Transaction transaction)
     {
@@ -93,10 +96,10 @@ public class DoublyLinkedList
     }
 
     /**
-     * Method to insert a new Transaction before a specific Node in List.
+     * Method to insert a new com.n26.api.models.Transaction before a specific com.n26.api.models.Node in List.
      * Runs in O(1) at worst case
-     * @param targetNode Target Node to insert before.
-     * @param transaction Transaction to be appended to the list.
+     * @param targetNode Target com.n26.api.models.Node to insert before.
+     * @param transaction com.n26.api.models.Transaction to be appended to the list.
      */
     public Node insertBefore(Node targetNode, Transaction transaction)
     {
@@ -113,13 +116,13 @@ public class DoublyLinkedList
 
         Node newNode = new Node(transaction, System.currentTimeMillis());
 
-        Node targetPrevious = targetNode.getPrevious();// target's current previous Node - to be replaced by new Node
+        Node targetPrevious = targetNode.getPrevious();// target's current previous com.n26.api.models.Node - to be replaced by new com.n26.api.models.Node
 
-        targetPrevious.setNext(newNode);// if target has previous, change target's previous Node's next to new Node
-        targetNode.setPrevious(newNode); // change target's next Node to new Node
+        targetPrevious.setNext(newNode);// if target has previous, change target's previous com.n26.api.models.Node's next to new com.n26.api.models.Node
+        targetNode.setPrevious(newNode); // change target's next com.n26.api.models.Node to new com.n26.api.models.Node
 
-        newNode.setPrevious(targetPrevious);// set new Node's previous to point to target's old previous Node
-        newNode.setNext(targetNode); // set new Node's next Node to point to target
+        newNode.setPrevious(targetPrevious);// set new com.n26.api.models.Node's previous to point to target's old previous com.n26.api.models.Node
+        newNode.setNext(targetNode); // set new com.n26.api.models.Node's next com.n26.api.models.Node to point to target
 
         System.out.println("\n*previous ["+newNode.getPrevious()+"] ->\n*current ["+newNode+"] ->\n*next ["+newNode.getNext()+"]");
         size++;
@@ -128,10 +131,10 @@ public class DoublyLinkedList
 
 
     /**
-     * Method to insert a new Transaction after a specific Node in List.
+     * Method to insert a new com.n26.api.models.Transaction after a specific com.n26.api.models.Node in List.
      * Runs in O(1) at worst case.
-     * @param targetNode Target Node to insert after.
-     * @param transaction Transaction to be appended to the list.
+     * @param targetNode Target com.n26.api.models.Node to insert after.
+     * @param transaction com.n26.api.models.Transaction to be appended to the list.
      */
     public Node insertAfter(Node targetNode, Transaction transaction)
     {
@@ -142,19 +145,19 @@ public class DoublyLinkedList
         }
         if(targetNode == null)
         {
-            System.err.println("Invalid target Node.");
+            System.err.println("Invalid target com.n26.api.models.Node.");
             return null;
         }
 
         Node newNode = new Node(transaction, System.currentTimeMillis());
 
-        Node targetNext = targetNode.getNext();// target's current next Node - to be replaced by new Node
+        Node targetNext = targetNode.getNext();// target's current next com.n26.api.models.Node - to be replaced by new com.n26.api.models.Node
 
-        targetNext.setPrevious(newNode);// if target has next, change target's next Node's previous to new Node
-        targetNode.setNext(newNode); // change target's next Node to new Node
+        targetNext.setPrevious(newNode);// if target has next, change target's next com.n26.api.models.Node's previous to new com.n26.api.models.Node
+        targetNode.setNext(newNode); // change target's next com.n26.api.models.Node to new com.n26.api.models.Node
 
-        newNode.setPrevious(targetNode);// change new Node's previous Node to target Node
-        newNode.setNext(targetNext); // change new Node's next to target's old next
+        newNode.setPrevious(targetNode);// change new com.n26.api.models.Node's previous com.n26.api.models.Node to target com.n26.api.models.Node
+        newNode.setNext(targetNext); // change new com.n26.api.models.Node's next to target's old next
 
         size++;
         return newNode;

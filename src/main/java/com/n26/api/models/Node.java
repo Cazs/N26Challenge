@@ -1,3 +1,5 @@
+package com.n26.api.models;
+
 /**
  * @author ghost
  * @date 2018/05/22
@@ -10,13 +12,13 @@ public class Node
     private Transaction value;
     private long date_logged;
 
-    Node(Transaction transaction, long date_logged)
+    public Node(Transaction transaction, long date_logged)
     {
         this.setValue(transaction);
         this.setDate_logged(date_logged);
     }
 
-    Node(Transaction value, Node next, Node previous, long date_logged)
+    public Node(Transaction value, Node next, Node previous, long date_logged)
     {
         this(value, date_logged);
         this.setNext(next);

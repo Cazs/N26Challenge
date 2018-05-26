@@ -1,3 +1,5 @@
+package com.n26.api.models;
+
 /**
  * @author ghost
  * @date 2018/05/22

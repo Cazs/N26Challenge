@@ -1,7 +1,10 @@
+import com.n26.api.exceptions.EmptyListException;
+import com.n26.api.models.DoublyLinkedList;
+import com.n26.api.models.Node;
+import com.n26.api.models.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -99,7 +102,7 @@ public class DoublyLinkedListTest
     }
 
     /**
-     * Node inserted before last Node should be new 2nd last Node after insertion
+     * com.n26.api.models.Node inserted before last com.n26.api.models.Node should be new 2nd last com.n26.api.models.Node after insertion
      */
     @Test
     public void insertBefore()
@@ -119,7 +122,7 @@ public class DoublyLinkedListTest
     }
 
     /**
-     * Node inserted after last Node should be new last Node
+     * com.n26.api.models.Node inserted after last com.n26.api.models.Node should be new last com.n26.api.models.Node
      */
     @Test
     public void insertAfter()
