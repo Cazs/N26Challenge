@@ -5,107 +5,107 @@ import javafx.util.Callback;
  * @date 2018/05/22
  */
 
-// Sort in descending order, from oldest Transaction to most recent Transaction
 public class DoublyLinkedList
 {
+    private Node firstNode;
     private Node lastNode;
     private int size;
 
     public DoublyLinkedList()
     {
-        System.out.println("init List.");
-        lastNode = new Node(null, System.currentTimeMillis()); // initialize tail of List
+        firstNode = new Node(null, System.currentTimeMillis()); // initialize head of List
+        lastNode = new Node(null, null, firstNode, System.currentTimeMillis()); // initialize tail of List
+        firstNode.setNext(lastNode);
         size = 0;
     }
-
-    public DoublyLinkedList(Transaction transaction)
-    {
-        lastNode = new Node(transaction, System.currentTimeMillis());
-    }
-
-    /*
-        if we were using the Transaction's timestamp property to sort the List, we'd use this method below:
-
-        if(lastNode.getNext() == null)
-        {
-            System.out.println("inserting transaction ("+transaction+") at first actual node");
-            // lastNode.setNext(new Node(transaction));
-            Node newNode = insertAfter(lastNode, transaction);
-            System.out.println("head Node next Node's timestamp: " + lastNode.getNext().getValue());
-            System.out.println("New node next timestamp: " + newNode.getPrevious().getValue());
-            return;
-        } else
-        {
-            Node newNode = insertBefore(lastNode, transaction); // descending order
-        }
-
-        Node current = lastNode.getNext();
-        while (current != null && current.getValue() != null)
-        {
-            // if new Transaction is newer than current Transaction, add new Node before current Node
-            // if(transaction.getTimestamp() > current.getValue().getTimestamp())
-            {
-                // Node/Transaction to be added is newer than current Node in iteration, add before
-                Node newNode = insertBefore(current, transaction); // descending order
-                return;
-            } // else, new Transaction is older than current Transaction, go to next Transaction
-
-            current = current.getNext();
-        }
-     */
 
     /**
      * Runs in O(1)
      * @return the tail/last Node in the List.
      */
-    public Node getLastNode()
+    public Node getLastNode() throws EmptyListException
     {
-        return lastNode;
+        if(!isEmpty())
+            return lastNode.getPrevious();
+        else throw new EmptyListException("List is empty");
     }
 
     /**
-     * Method to filter List using an arbitrary comparator.
-     * Runs in O(n) at worst case
-     * @param limit the limit applicable to comparator callback.
+     * Runs in O(1)
+     * @return the head/first Node in the List.
+     */
+    public Node getFirstNode() throws EmptyListException
+    {
+        if(!isEmpty())
+            return firstNode.getNext();
+        else throw new EmptyListException("List is empty");
+    }
+
+    /**
+     * Method to iterate through List in chronological order
+     * Runs in O(n) at worst case - i.e. if no limit has been specified.
+     * @param limit the time limit, 0 for no limit (i.e. iterate over all elements)
      */
     public void filter(Callback callback, long limit)
     {
-        Node current = lastNode.getPrevious();
+        Node current = firstNode.getNext();
 
-        while (current != null && current.getValue() != null)
+        while (current != lastNode)
         {
             /*
              *   look for Transactions made within the last 60 seconds
              *   - use timestamp created by local system to check (using local system's default timezone).
              */
-            if(current.getDate_logged() >= limit)
+            if(limit == 0 || current.getDate_logged() >= limit)
             {
                 if (callback != null)
                 {
                     Transaction processedTransaction = (Transaction) callback.call(current.getValue());
-                    current = current.getPrevious();
                 } else {
                     System.err.println("Error: Invalid filter.");
                     break;
                 }
             } else break; // going too far down the List, stop search.
+            current = current.getNext();
         }
+    }
+
+    /**
+     * Inserts a new Transaction at the beginning of the List.
+     * Runs in O(1)
+     * @param transaction Transaction to be inserted.
+     * @return newly created Node with Transaction inside.
+     */
+    public Node insertFirst(Transaction transaction)
+    {
+        return insertAfter(firstNode, transaction);
+    }
+
+    /**
+     * Inserts a new Transaction at the end of the List.
+     * Runs in O(1)
+     * @param transaction Transaction to be inserted.
+     * @return newly created Node with Transaction inside.
+     */
+    public Node insertLast(Transaction transaction)
+    {
+        return insertBefore(lastNode, transaction);
     }
 
     /**
      * Method to insert a new Transaction before a specific Node in List.
      * Runs in O(1) at worst case
-     * @param target Target Node to insert before.
+     * @param targetNode Target Node to insert before.
      * @param transaction Transaction to be appended to the list.
      */
-    public Node insertBefore(Node target, Transaction transaction)
+    public Node insertBefore(Node targetNode, Transaction transaction)
     {
         if(transaction == null)
         {
             System.err.println("Invalid transaction.");
             return null;
         }
-        if(target == null)
+        if(targetNode == null)
         {
             System.err.println("Invalid target.");
             return null;
@@ -113,16 +113,15 @@ public class DoublyLinkedList
 
         Node newNode = new Node(transaction, System.currentTimeMillis());
 
-        Node targetPrevious = target.getPrevious();// target's current previous Node - to be replaced by new Node
+        Node targetPrevious = targetNode.getPrevious();// target's current previous Node - to be replaced by new Node
 
-        if(targetPrevious!=null)
-            targetPrevious.setNext(newNode);// if target has previous, change target's previous Node's next to new Node
-        target.setPrevious(newNode); // change target's next Node to new Node
+        targetPrevious.setNext(newNode);// if target has previous, change target's previous Node's next to new Node
+        targetNode.setPrevious(newNode); // change target's next Node to new Node
 
         newNode.setPrevious(targetPrevious);// set new Node's previous to point to target's old previous Node
-        newNode.setNext(target); // set new Node's next Node to point to target
+        newNode.setNext(targetNode); // set new Node's next Node to point to target
 
-        System.out.println("*previous ["+newNode.getPrevious()+"] ->\n*current ["+newNode+"] ->\n*next ["+newNode.getNext()+"]");
+        System.out.println("\n*previous ["+newNode.getPrevious()+"] ->\n*current ["+newNode+"] ->\n*next ["+newNode.getNext()+"]");
         size++;
         return newNode;
     }
@@ -131,31 +130,30 @@ public class DoublyLinkedList
     /**
      * Method to insert a new Transaction after a specific Node in List.
      * Runs in O(1) at worst case.
-     * @param target Target Node to insert after.
+     * @param targetNode Target Node to insert after.
      * @param transaction Transaction to be appended to the list.
      */
-    public Node insertAfter(Node target, Transaction transaction)
+    public Node insertAfter(Node targetNode, Transaction transaction)
     {
         if(transaction == null)
         {
             System.err.println("Invalid transaction.");
             return null;
         }
-        if(target == null)
+        if(targetNode == null)
         {
-            System.err.println("Invalid target.");
+            System.err.println("Invalid target Node.");
             return null;
         }
 
         Node newNode = new Node(transaction, System.currentTimeMillis());
 
-        Node targetNext = target.getNext();// target's current next Node - to be replaced by new Node
+        Node targetNext = targetNode.getNext();// target's current next Node - to be replaced by new Node
 
-        if(targetNext!=null)
-            targetNext.setPrevious(newNode);// if target has next, change target's next Node's previous to new Node
-        target.setNext(newNode); // change target's next Node to new Node
+        targetNext.setPrevious(newNode);// if target has next, change target's next Node's previous to new Node
+        targetNode.setNext(newNode); // change target's next Node to new Node
 
-        newNode.setPrevious(target);// change new Node's previous Node to target Node
+        newNode.setPrevious(targetNode);// change new Node's previous Node to target Node
         newNode.setNext(targetNext); // change new Node's next to target's old next
 
         size++;
@@ -169,5 +167,15 @@ public class DoublyLinkedList
     public int size()
     {
         return size;
+    }
+
+    /**
+     * Checks whether this List instance is empty or not.
+     * Runs in O(1)
+     * @return whether the List is empty or not.
+     */
+    public boolean isEmpty()
+    {
+        return firstNode.getNext() == lastNode;
     }
 }

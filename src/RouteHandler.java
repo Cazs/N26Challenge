@@ -15,7 +15,7 @@ public class RouteHandler
 {
     private static DoublyLinkedList transactions = new DoublyLinkedList();
 
-    public static int time_limit = 60 * 1000; // time limit in milliseconds
+    public static int time_limit = 10 * 1000; // time limit in milliseconds
     private static double sum = 0.0f; // sum of Transactions made in the last 60 seconds
     private static double avg = 0.0f; // average Transaction value of Transactions made in the last 60 seconds
     private static double max = 0.0f; // max Transaction value in the last 60 seconds
@@ -153,12 +153,12 @@ public class RouteHandler
     private static boolean getStats(OutputStreamWriter outWriter) throws IOException
     {
         String responseBody = String.format("{\n" +
-                                                    "\t\"sum\": %s,\n" +
-                                                    "\t\"avg\": %s,\n" +
-                                                    "\t\"max\": %s,\n" +
-                                                    "\t\"min\": %s,\n" +
-                                                    "\t\"count\": %s\n" +
-                                                    "}", sum, avg, max, min, count);
+                                            "\t\"sum\": %s,\n" +
+                                            "\t\"avg\": %s,\n" +
+                                            "\t\"max\": %s,\n" +
+                                            "\t\"min\": %s,\n" +
+                                            "\t\"count\": %s\n" +
+                                            "}", sum, avg, max, min, count);
         // send response
 
         return Server.sendMessage(outWriter,
@@ -219,10 +219,6 @@ public class RouteHandler
         }
         Transaction newTransaction = new Transaction(amount, timestamp);
 
-        // dummy Transaction
-        // long transaction_time = System.currentTimeMillis(); // time the transaction was logged
-        // Transaction newTransaction = new Transaction(new Random().nextDouble() * 1000, transaction_time);
-
         if(newTransaction == null)
         {
             Server.errorAndCloseConnection(client_connection,
@@ -232,7 +228,7 @@ public class RouteHandler
             return false;
         }
 
-        transactions.insertBefore(transactions.getLastNode(), newTransaction);
+        transactions.insertFirst(newTransaction); // sort newest to oldest
 
         System.out.println("added Transaction: " + newTransaction);
 
@@ -277,11 +273,11 @@ public class RouteHandler
             return Server.sendMessage(outWriter,
                                       HttpResponseCode.HTTP_201,
                                       Server.DEFAULT_HTTP_VERSION,
-                                      "success");
+                                      "");
         else // new Transaction's timestamp is older than 60 seconds
             return Server.sendMessage(outWriter,
                                       HttpResponseCode.HTTP_204,
                                       Server.DEFAULT_HTTP_VERSION,
-                                      "too old");
+                                      "");
     }
 }
