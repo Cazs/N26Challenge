@@ -12,16 +12,15 @@ public class Node
 
     Node(Transaction transaction, long date_logged)
     {
-        this.date_logged = date_logged;
         this.setValue(transaction);
+        this.setDate_logged(date_logged);
     }
 
     Node(Transaction value, Node next, Node previous, long date_logged)
     {
-        this.value = value;
-        this.next = next;
-        this.previous = previous;
-        this.date_logged = date_logged;
+        this(value, date_logged);
+        this.setNext(next);
+        this.setPrevious(previous);
     }
 
     public Node getNext()
