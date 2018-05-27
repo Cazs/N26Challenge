@@ -1,6 +1,5 @@
 package com.n26.api;
 
-import com.n26.api.models.DoublyLinkedList;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,9 +13,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableAutoConfiguration
 public class Server
 {
-    // Our in-memory DB
-    public static DoublyLinkedList transactions = new DoublyLinkedList();
-
     public static void main(String[] args)
     {
         SpringApplication.run(Server.class, args);

@@ -13,13 +13,12 @@ public class Database
 {
     private DoublyLinkedList transactions = new DoublyLinkedList();
     private static Database db = new Database();
-
-    public static int time_limit = 10 * 1000; // time limit in milliseconds
     private static double sum = 0.0; // sum of Transactions made in the last 60 seconds
     private static double avg = 0.0; // average Transaction value of Transactions made in the last 60 seconds
     private static double max = 0.0; // max Transaction value in the last 60 seconds
     private static double min = 0.0; // lowest Transaction value in the last 60 seconds
     private static int count = 0; // number of Transactions made in the last 60 seconds
+    public static int time_limit = 60 * 1000; // time limit in milliseconds
 
 
     private Database()
