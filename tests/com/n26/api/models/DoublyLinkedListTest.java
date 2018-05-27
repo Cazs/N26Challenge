@@ -1,3 +1,5 @@
+package com.n26.api.models;
+
 import com.n26.api.exceptions.EmptyListException;
 import com.n26.api.models.DoublyLinkedList;
 import com.n26.api.models.Node;

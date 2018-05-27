@@ -1,4 +1,5 @@
-import com.n26.api.controllers.TransactionController;
+package com.n26.api.controllers;
+
 import com.n26.api.helpers.CustomHttpResponseCodes;
 import com.n26.api.helpers.Database;
 import com.n26.api.models.Transaction;
@@ -6,9 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.util.Random;
-
 import static org.junit.Assert.*;
 
 public class TransactionControllerTest

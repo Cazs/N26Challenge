@@ -1,3 +1,5 @@
+package com.n26.api.models;
+
 import com.n26.api.models.Node;
 import com.n26.api.models.Transaction;
 import org.junit.Before;
